@@ -1,8 +1,9 @@
 import Vue from 'vue'
 
-import App from '@/components/App.vue'
+import Chat from '@/components/Chat.vue'
+
 
 new Vue({
     el: '#app-root',
-    render: h => h(App)
+    render: h => h(Chat)
 })
