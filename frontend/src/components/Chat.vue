@@ -3,7 +3,7 @@
     	<button class="chatChanger" v-on:click="changeChat()"></button>
         <vue-perfect-scrollbar  class="wrapper">
         	<div class="chat">
-	        	<div v-for="messages in (victimChatOpened)? victimChat : killerChat" v-bind:class="['message', messages.value  ? 'friend' : 'me']">
+	        	<div v-for="messages in this.$data[currentChat]" v-bind:class="['message', messages.value ? 'friend' : 'me']">
         				{{messages.message}} 
 	        	</div>
 			</div>
@@ -31,11 +31,24 @@ export default {
 				value: 1,
 				message: 'net ti lox'
 			}],
-			victimChatOpened: true
+			currentChat: "victimChat",
+			socket : {}
 		}
 	},
 	components: {
 		VuePerfectScrollbar
+	},
+	mounted: function() {
+		this.$data.socket = new WebSocket("ws://");
+		this.$data.socket.onmessage = function(event) {
+			this.$data[event.data.currentChat].push({
+				value: 1,
+				message : event.data.message
+			})
+		};
+		this.$data.socket.onerror = function(e) {
+			console.log("Error occured: " + e.message);
+		}
 	},
 	methods: {
 		formate: function()  {
@@ -47,24 +60,30 @@ export default {
 			event.preventDefault();	
 			let input = document.querySelector(".input");
 			if (input.value) {
-				if (this.$data.victimChatOpened)
-					this.$data.victimChat.push({
-						value: 0,
-						message : input.value
-					});
-				else 
-					this.$data.killerChat.push({
-						value: 0,
-						message : input.value
-					});
+				let message = 
+				this.$data[this.$data.currentChat].push({
+					value: 0,
+					message : input.value
+				});
 				input.value = "";
+				this.$data.socket.send({
+					currentChat: this.$data.currentChat,
+					message : input.value
+				})
+				setTimeout(this.rescroll,0);
+
 			}
 		},
-		changeChat: function() {
-			this.$data.victimChatOpened = !this.$data.victimChatOpened;	
-		},
-		createWebSocket: function() {
 
+		changeChat: function() {
+			if (this.$data.currentChat === "killerChat")
+				this.$data.currentChat = "victimChat";
+			else 
+				this.$data.currentChat = "killerChat";
+		},
+		rescroll: function() {
+			let scrollbar = document.querySelector(".wrapper");
+			scrollbar.scrollTop = scrollbar.scrollHeight;
 		}
 	}
 }
@@ -86,13 +105,6 @@ export default {
 
 	.chat , .input {
 		font-family: "Arial";
-	}
-
-	.scroll-area {
-	  position: relative;
-	  margin: auto;
-	  width: 400px;
-	  height: 300px;
 	}
 
 	.chat {
