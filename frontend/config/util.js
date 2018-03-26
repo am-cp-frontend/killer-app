@@ -44,6 +44,7 @@ exports.cssLoaders = function (options = {}) {
         styl: generateLoaders('stylus', stylusConfiguration),
         js: {
             loader: 'babel-loader',
+            /* exclude: /node_modules/, */
             options: {
                 presets: ['env']
             }

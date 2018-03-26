@@ -1,9 +1,12 @@
 import Vue from 'vue'
+import Vuex from 'vuex'
 
-import Chat from '@/components/Chat.vue'
+vue.use(vuex)
+
+import PlayerList from '@/components/PlayerList.vue'
 
 
 new Vue({
     el: '#app-root',
-    render: h => h(Chat)
+    render: h => h(PlayerList)
 })
