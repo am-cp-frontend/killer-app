@@ -1,4 +1,7 @@
-$font-family--header: 'Roboto';
+@import url(http://allfont.ru/allfont.css?fonts=roboto-thin);
+@import url(http://allfont.ru/allfont.css?fonts=roboto-light);
+$font-family--header: 'Roboto Thin';
+$font-family--main:'Roboto Light';
 $font-size--header: 30px;
 $font-weight--thin: 100;
 $font-weight--light: 300;

@@ -1,64 +1,117 @@
 <template>
-  <div id='app' >
+    <div id='app' >
+        <form  enctype="multipart/form-data" method="post" >
+            <layout v-show='stage1'>
+                <div slot='header'>
+                    Регистрация
+                </div>
+                <div slot='content'>
+                    <inputText v-model='email'>
+                        <span slot='label'>Email</span>
+                        <div slot='error'>
+                            <span  v-if='!$v.email.required&&err'>Введите email</span>
+                            <span v-if='!$v.email.email'>Не email</span>
+                        </div>
+                    </inputText>
 
-    <form  enctype="multipart/form-data" method="post" >
+                    <br>
 
-      <inputText v-model='name.first'>
-           <span slot='label'>Имя</span>
-      </inputText>
+                    <inputText v-model='deathCode'>
+                        <span slot='label'>Код смерти</span>
+                        <div slot='error'>
+                            <span v-if='!$v.deathCode.required&&err'>Введите код</span>
+                            <span v-if='!$v.deathCode.between'>Число от 1000 до 9999</span>
+                        </div>
+                    </inputText>
 
-      <span v-if='!$v.name.first.required'>Поле должно быть заполнено</span>
-      <span v-if='!$v.name.first.alpha'>Только буквы</span>
-      <br>
+                    <br>
 
-      Фамилия
-      <br>
-      <input type='text' v-model='name.last' >
-      <span v-if='!$v.name.last.required'>Поле должно быть заполнено</span>
-      <span v-if='!$v.name.last.alpha'>Только буквы</span>
-      <br>
+                    <inputText v-model='deathCodeRep'>
+                        <span slot='label'>Повторите код</span>
+                        <div slot='error'>
+                            <span v-if='!$v.deathCodeRep.required&&err'>Повторите код</span>
+                            <span v-if='!$v.deathCodeRep.sameAsCode&&$v.deathCodeRep.required'>Коды не совпадают</span>
 
-      Курс
-      <br>
-      <input  type='text' v-model='courseStr' @input='checkCourse'>
-      <span v-if='!$v.courseStr.required'>Поле должно быть заполнено</span>
-      <span v-if='(errCourse)&&($v.courseStr.required)'>Некоррекные данные</span>
+                        </div>
+                    </inputText>
+                </div>
 
-      <br>
-      Email
-      <br>
-      <input type='text' v-model='email'>
-      <span v-if='!$v.email.required'>Поле должно быть заполнено</span>
-      <span v-if='!$v.email.email'>Не email</span>
-      <br>
-      Код смерти
-      <br>
-      <input type='text' v-model='deathCode'>
-      <span v-if='!$v.deathCode.required'>Поле должно быть заполнено</span>
-      <span v-if='!$v.deathCode.between'>Число от 1000 до 9999</span>
-      <br>
-      Vk
-      <br>
-      <input type='text' v-model='vk'>
-      <span v-if='!$v.vk.required'>Поле должно быть заполнено</span>
-      <br>
-      Фото
-      <br>
-      <input type='file' id='file' @change='loadPhoto' accept='image/jpeg,image/png'>
-      <span v-if='!$v.photo.required'>Загрузите фото</span>
-      <br><br>
-     <button type='button' @click='register'>Зарегистрироваться</button>
+                <div slot='footer'>
+                    <img src='../pictures/arrow.png' width='37px' height='47px' @click='nextStage'>
+                </div>
+            </layout>
 
-    </form>
+            <layout v-show='!stage1' >
+                <div slot='header'>Досье</div>
+                <div slot='content'>
+                    <inputText v-model='name.first'>
+                        <span slot='label'>Имя</span>
+                        <div slot='error'>
+                            <span v-if='!$v.name.first.required&&err'>Введите имя</span>
+                            <span v-if='!$v.name.first.alpha'>Только буквы</span></div>
+                    </inputText>
 
-  </div>
+                    <br>
+
+                    <inputText v-model='name.last'>
+                        <span slot='label'>Фамилия</span>
+                        <div slot='error'>
+                            <span v-if='!$v.name.last.required&&err'>Введите фамилию</span>
+                            <span v-if='!$v.name.last.alpha'>Только буквы</span>
+                        </div>
+                    </inputText>
+
+                    <br>
+
+                    <inputText v-model='courseStr' @input='checkCourse'>
+                        <span slot='label'>Курс</span>
+                        <div slot='error'>
+                            <span v-if='!$v.courseStr.required&&err'>Введите курс</span>
+                            <span v-if='(errCourse)&&($v.courseStr.required)'>Некоррекные данные</span>
+                        </div>
+                    </inputText>
+
+                    <br>
+
+                    <inputText v-model='vk'>
+                        <span slot='label'>Vk</span>
+                        <div slot='error'>
+                             <span v-if='!$v.vk.required&&err'>Введите vk</span>
+                         </div>
+                     </inputText>
+
+                     <br>
+
+                     <inputFile @change='loadPhoto'>
+                         <span slot='label'>Фото</span>
+                         <div slot='error'>
+                              <span v-if='!$v.photo.required&&err'>Загрузите фото</span>
+                          </div>
+                      </inputFile>
+
+                      <br>
+                  </div>
+                  <div slot='footer'>
+                      <div class='arrows'>
+                          <div class='left'>
+                              <img src='../pictures/arrow2.png' width='37px' height='47px' @click='lastStage'>
+                          </div>
+                          <div class='right'>
+                              <img src='../pictures/arrow.png' width='37px' height='47px' @click='register'>
+                          </div>
+                      </div>
+                  </div>
+              </layout>
+          </form>
+      </div>
 </template>
 
 <script>
 import { validationMixin } from 'vuelidate'
-import { required,alpha,email,between } from 'vuelidate/lib/validators'
+import { required,alpha,email,between,sameAs } from 'vuelidate/lib/validators'
 import inputText from './input.vue'
-
+import inputFile from './inputFile.vue'
+import layout from './Layout.vue'
 export default {
     data () {
         return {
@@ -72,11 +125,16 @@ export default {
             vk:'',
             photo:'',
             deathCode:'',
-            errCourse:false
+            deathCodeRep:'',
+            errCourse:false,
+            stage1:true,
+            err:false
         }
     },
     components: {
-        'inputText':inputText
+        'inputText':inputText,
+        'inputFile':inputFile,
+        'layout':layout
     },
 
     mixins: [validationMixin],
@@ -109,15 +167,31 @@ export default {
         },
         courseStr:{
             required
+        },
+        deathCodeRep:{
+            required,
+            sameAsCode:sameAs('deathCode')
         }
+
     },
 
     methods: {
-        loadPhoto () {
-            var imagefile = document.getElementById('file')
-            this.photo=imagefile.files[0]
+        loadPhoto (value) {
+            this.photo=value
         },
+        nextStage () {
+            if(!this.$v.email.$invalid&&!this.$v.deathCode.$invalid&&!this.$v.deathCodeRep.$invalid)
+            {
+                this.stage1=false
+                this.err=false
+            }
+            else this.err=true
 
+        },
+        lastStage () {
+            this.stage1=true
+
+        },
         checkCourse () {
             var value
             if(this.courseStr.match(/[0-4]/i)||(this.courseStr.match(/преп/i))||(this.courseStr.match(/асп/i)))
@@ -164,7 +238,33 @@ export default {
                 }
                 this.$store.dispatch('register',postBody)
             }
+            else this.err=true
         }
     }
 }
 </script>
+<style lang="scss"  >
+    @import '../utils/var';
+    body {
+        background-color:$color--bg-main;
+    }
+    .arrows {
+        position: relative;
+        width:320px;
+        margin-left:auto;
+        margin-right: auto;
+    }
+    .left {
+        position:absolute;
+        left:0px;
+    }
+    .right {
+        position:absolute;
+        right:0px;
+    }
+    @media screen and (max-width: 320px) {
+        .arrows {
+            width:270px;
+        }
+    }
+</style>
